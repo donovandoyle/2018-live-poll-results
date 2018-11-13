@@ -1,0 +1,37 @@
+---
+title: "ps_7"
+author: "Donovan Doyle, Connor Sakmar, Keely MacAfee"
+date: "November 13, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(plyr)
+library(knitr)
+library(kableExtra)
+library(janitor)
+library(fs)
+library(lubridate)
+library(readxl)
+```
+
+```{r read-in, echo = FALSE, warning = FALSE, message = FALSE}
+start <- dir_ls("data")
+full_data <- map_dfr(start, read_csv, .id = "source")
+first_wave <- full_data %>%
+  separate(source, into = c("data", "elections", "poll", "district", "wave", ".csv")) %>%
+  select(-data, -elections, -poll, -.csv)
+first_wave
+
+download.file(url = "https://piazza.com/redirect/s3?bucket=uploads&prefix=attach%2Fjkjtds7xjxd3jy%2Fjlr7wvzsace3kp%2Fjoc6wbypyxy7%2Fmt_2_results.csv", destfile = "mt_2_results.csv")
+```
+
+
+Do this at the very end
+```{r}
+file_delete("mt_2_results.csv")
+```
+
