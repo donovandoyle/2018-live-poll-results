@@ -70,6 +70,11 @@ ca_polls <- polls_separate %>%
   filter(gender != "[DO NOT READ] Don't know/Refused") %>%
   filter(wave == "3")
 
+
+write_rds(ca_polls, "ps_7/ca_polls.rds", compress = "none")
+
+
+
 ```
 
 
@@ -78,5 +83,8 @@ ca_results <- schroeder_data %>%
   filter(state == "CA")
 
 ca_results_clean <- ca_results[ c(10, 25, 39, 45, 48, 49), ]
+
+
+ca_results_clean
 ```
 
