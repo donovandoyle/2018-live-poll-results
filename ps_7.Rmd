@@ -1,6 +1,6 @@
 ---
 title: "ps_7"
-author: "Donovan Doyle, Connor Sakmar, Keely MacAfee"
+author: "Donovan Doyle, Connor Sakmar, Keeley MacAfee, Annabelle Paterson"
 date: "November 13, 2018"
 output: html_document
 ---
