@@ -1,7 +1,7 @@
 ---
-title: "ps_7"
-author: "Donovan Doyle, Connor Sakmar, Keeley MacAfee, Annabelle Paterson"
-date: "November 13, 2018"
+title: "Problem Set 7"
+author: "Keeley MacAfee, Connor Sakmar, Donovan Doyle, Annabelle Paterson"
+date: "11/18/2018"
 output: html_document
 ---
 
@@ -10,33 +10,32 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dplyr)
 library(plyr)
-library(knitr)
-library(kableExtra)
-library(janitor)
-library(fs)
-library(lubridate)
+library(tidyverse)
+library(foreign)
 library(readxl)
 library(stringr)
-```
-
-```{r read-in, echo = FALSE, warning = FALSE, message = FALSE}
-start <- dir_ls("data")
-full_data <- map_dfr(start, read_csv, .id = "source")
-first_wave <- full_data %>%
-  separate(source, into = c("data", "elections", "poll", "s_d", "wave", ".csv")) %>%
-  select(-data, -elections, -poll, -.csv)
-
-download.file(url = "https://piazza.com/redirect/s3?bucket=uploads&prefix=attach%2Fjkjtds7xjxd3jy%2Fjlr7wvzsace3kp%2Fjoc6wbypyxy7%2Fmt_2_results.csv", destfile = "mt_2_results.csv")
-
-results <- read_csv("mt_2_results.csv")
-results <- results %>%
-  mutate(state = str_to_lower(state)) %>%
-  unite(s_d, state, district, sep = "")
+library(fs)
+library(kableExtra)
+library(formattable)
+library(lubridate)
+library(knitr)
+library(janitor)
 ```
 
 
-Do this at the very end
-```{r, include = FALSE}
-file_delete("mt_2_results.csv")
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+download.file("https://goo.gl/ZRCBda",
+              destfile = "Polls.zip",
+              quiet = TRUE,
+              mode = "wb")
+
+unzip("Polls.zip")
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+x <- dir_ls("2018-live-poll-results-master/data")
+
+polls <- map_dfr(x, read_csv, .id = "source")
 ```
 
