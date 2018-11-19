@@ -33,9 +33,96 @@ unzip("Polls.zip")
 
 ```
 
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 x <- dir_ls("2018-live-poll-results-master/data")
 
 polls <- map_dfr(x, read_csv, .id = "source")
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+download.file(url = "https://d1b10bmlvqabco.cloudfront.net/attach/jkjtds7xjxd3jy/jlr7wvzsace3kp/joc6wbypyxy7/mt_2_results.csv",
+              destfile = "mt_2_results.csv")
+
+schroeder_data <- read_csv("mt_2_results.csv")
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ca_10_raw <- read_csv("2018-live-poll-results-master/data/elections-poll-ca10-3.csv")
+
+ca_25_raw <- read_csv("2018-live-poll-results-master/data/elections-poll-ca25-3.csv")
+
+ca_39_raw <- read_csv("2018-live-poll-results-master/data/elections-poll-ca39-3.csv")
+
+ca_45_raw <- read_csv("2018-live-poll-results-master/data/elections-poll-ca45-3.csv")
+
+ca_48_raw <- read_csv("2018-live-poll-results-master/data/elections-poll-ca48-3.csv")
+
+ca_49_raw <- read_csv("2018-live-poll-results-master/data/elections-poll-ca49-3.csv")
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ca_10 <- ca_10_raw %>%
+  select(response, ager, educ, gender, race_eth, race_edu) %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused")
+
+
+ca_25 <- ca_25_raw %>%
+  select(response, ager, educ, gender, race_eth, race_edu) %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused")
+
+ca_39 <- ca_39_raw %>%
+  select(response, ager, educ, gender, race_eth, race_edu) %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused")
+
+ca_45 <- ca_45_raw %>%
+  select(response, ager, educ, gender, race_eth, race_edu) %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused")
+
+ca_48 <- ca_48_raw %>%
+  select(response, ager, educ, gender, race_eth, race_edu) %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused")
+
+ca_49 <- ca_49_raw %>%
+  select(response, ager, educ, gender, race_eth, race_edu) %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused")
+```
+
+
+```{r}
+ggplot(ca_49, aes(x = ager, y = educ)) + geom_point()
 ```
 
