@@ -20,6 +20,7 @@ library(formattable)
 library(lubridate)
 library(knitr)
 library(janitor)
+library(stringr)
 ```
 
 
@@ -72,7 +73,8 @@ ca_10 <- ca_10_raw %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Refused") %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused")
+  filter(ager != "[DO NOT READ] Refused") %>%
+  mutate(district = 10)
 
 
 ca_25 <- ca_25_raw %>%
@@ -82,7 +84,8 @@ ca_25 <- ca_25_raw %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Refused") %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused")
+  filter(ager != "[DO NOT READ] Refused") %>%
+  mutate(district = 25)
 
 ca_39 <- ca_39_raw %>%
   select(response, ager, educ, gender, race_eth, race_edu) %>%
@@ -91,7 +94,8 @@ ca_39 <- ca_39_raw %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Refused") %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused")
+  filter(ager != "[DO NOT READ] Refused") %>%
+  mutate(district = 39)
 
 ca_45 <- ca_45_raw %>%
   select(response, ager, educ, gender, race_eth, race_edu) %>%
@@ -100,7 +104,8 @@ ca_45 <- ca_45_raw %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Refused") %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused")
+  filter(ager != "[DO NOT READ] Refused") %>%
+  mutate(district = 45)
 
 ca_48 <- ca_48_raw %>%
   select(response, ager, educ, gender, race_eth, race_edu) %>%
@@ -109,7 +114,8 @@ ca_48 <- ca_48_raw %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Refused") %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused")
+  filter(ager != "[DO NOT READ] Refused") %>%
+  mutate(district = 48)
 
 ca_49 <- ca_49_raw %>%
   select(response, ager, educ, gender, race_eth, race_edu) %>%
@@ -118,11 +124,21 @@ ca_49 <- ca_49_raw %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Refused") %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused")
+  filter(ager != "[DO NOT READ] Refused") %>%
+  mutate(district = 49)
+
 ```
 
 
 ```{r}
-ggplot(ca_49, aes(x = ager, y = educ)) + geom_point()
+
+```
+
+
+```{r}
+ca_results <- schroeder_data %>%
+  filter(state == "CA")
+
+ca_results_clean <- ca_results[ c(10, 25, 39, 45, 48, 49), ]
 ```
 
