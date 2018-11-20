@@ -58,9 +58,8 @@ polls_separate <-polls %>%
   separate(neat, into = c("c", "year", "live", "poll", "results", "master", "data", "elections", "poll_again", "state_district", "wave")) %>%
   select(state_district, response, wave, ager, educ, gender, race_eth, race_edu)
 
-ca_polls <- polls_separate %>%
+polls_clean <- polls_separate %>%
   separate(state_district, into = c("state", "district"), sep = 2) %>%
-  filter(state == "ca") %>%
   filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
   filter(race_edu != "[DO NOT READ] Don't know/Refused") %>%
   filter(educ != "[DO NOT READ] Don't know/Refused") %>%
@@ -68,23 +67,24 @@ ca_polls <- polls_separate %>%
   filter(ager != "[DO NOT READ] Don't know/Refused") %>%
   filter(ager != "[DO NOT READ] Refused") %>%
   filter(gender != "[DO NOT READ] Don't know/Refused") %>%
-  filter(wave == "3")
+  filter(wave == "3") %>%
+  filter(district != "sen") %>%
+  filter(district != "gov")
 
 
-write_rds(ca_polls, "ps_7/ca_polls.rds", compress = "none")
-
+write_rds(polls_clean, "ps_7/polls_clean.rds", compress = "none")
 
 
 ```
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-ca_results <- schroeder_data %>%
-  filter(state == "CA")
+results <- schroeder_data %>%
+  filter(district != "sen") %>%
+  filter(district != "gov")
+```
 
-ca_results_clean <- ca_results[ c(10, 25, 39, 45, 48, 49), ]
+```{r}
 
-
-ca_results_clean
 ```
 
