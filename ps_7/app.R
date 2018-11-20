@@ -24,7 +24,7 @@ library(janitor)
 library(stringr)
 library(plotly)
 
-data <- read_rds("polls_clean.rds")
+
 joined_data <- read_rds("joined_data.rds")
 
 # Define UI for application that draws a histogram
@@ -38,22 +38,10 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       
-      selectInput(inputId = "y",
-                  label = "Educ",
-                  choices = unique(data$educ),
-                  selected = "Some college or trade school"),
-    selectInput(inputId = "d",
-                label = "Age:",
-                choices = unique(data$ager),
-                selected = "65 and older"),
-    selectInput(inputId = "k",
-                label = "Gender:",
-                choices = unique(data$gender),
-                selected = "Male"),
-    selectInput(inputId = "c",
-                label = "Race/Ethnicity",
-                choices = unique(data$race_eth),
-                selected = "Hispanic")),
+      selectInput(inputId = "x",
+                  label = "Winning Party:",
+                  choices = unique(joined_data$win_party),
+                  selected = "Republican")),
     
     
     
@@ -62,9 +50,11 @@ ui <- fluidPage(
      
       
       tabsetPanel(type = "tabs",
-                  tabPanel("About this app", htmlOutput("about")),
-                  tabPanel("Scatterplot", plotlyOutput("myPlot")),
-                  tabPanel("Linear regression plot", plotOutput("myPlot2")))
+                  tabPanel("About", htmlOutput("about")),
+                  tabPanel("Linear Regression", plotOutput("myPlot")),
+                  tabPanel("Summary", plotOutput("summary")))
+      
+                 
     )
   )
 )
@@ -72,24 +62,19 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$myPlot <- renderPlotly({ 
+
     
-   data%>%
-      filter(educ == input$y, ager == input$d, gender == input$k, race_eth == input$c) %>%
-     ggplot(aes(x = response)) + geom_bar(response = "dodge") + ggtitle("Predicted Republican Advantage is not Always Right ") +
-     xlab("Republican Advantage Prediction") + ylab("Republican Advantage Results")})
-  
-  output$myPlot2 <- renderPlot({
+    
+  output$myPlot <- renderPlot({
     
     joined_data %>%
-      mutate(dem_diff = dem_true - Dem_per) %>%
-      mutate(rep_diff = rep_true - Rep_per) %>%
-      ggplot(aes(x = Dem_per, y = dem_true)) + geom_point(response = "dodge")
-    
-    
+      filter(win_party == input$x) %>%
+      ggplot(aes(x = Rep_per, y = rep_true)) + geom_point(response = "dodge") + geom_smooth(method = "lm") + geom_abline(linetype = "dashed")
     
     
   })
+    
+  
 }
 
 # Run the application 

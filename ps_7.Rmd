@@ -102,10 +102,18 @@ joined <- left_join(results, polls_clean2, by = "state_district") %>%
   select(state_district, win_party, dem_votes, rep_votes, other_votes, total, Dem_per, Rep_per) %>%
   mutate(total_true = (dem_votes + rep_votes + other_votes)) %>%
   mutate(dem_true = (dem_votes / total_true), rep_true = (rep_votes / total_true)) %>%
-  filter(!is.na(total))
+  filter(!is.na(total)) %>%
+  separate(state_district, into = c("state", "district"), sep = 2)
   
+fit <- lm(rep_true ~ Rep_per, data = joined)
+
+fit <- joined %>% 
+  mutate(rep_true = parse_number(rep_true), rep_per = parse_number(Rep_per)) %>%
+  lm(rep_true ~ Rep_per)
 write_rds(joined, "ps_7/joined_data.rds", compress = "none")
 
+
+joined_data
 ```
 
 ```
