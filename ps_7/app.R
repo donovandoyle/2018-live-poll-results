@@ -22,8 +22,10 @@ library(lubridate)
 library(knitr)
 library(janitor)
 library(stringr)
+library(plotly)
 
-data <- read_rds("ca_polls.rds")
+data <- read_rds("polls_clean.rds")
+joined_data <- read_rds("joined_data.rds")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -57,7 +59,12 @@ ui <- fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput(outputId = "myPlot")
+     
+      
+      tabsetPanel(type = "tabs",
+                  tabPanel("About this app", htmlOutput("about")),
+                  tabPanel("Scatterplot", plotlyOutput("myPlot")),
+                  tabPanel("Linear regression plot", plotOutput("myPlot2")))
     )
   )
 )
@@ -65,12 +72,24 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$myPlot <- renderPlot({ 
+  output$myPlot <- renderPlotly({ 
     
-    data%>%
+   data%>%
       filter(educ == input$y, ager == input$d, gender == input$k, race_eth == input$c) %>%
-      ggplot(aes(x = response)) + geom_bar(response = "dodge") + ggtitle("Predicted Republican Advantage is not Always Right ") +
-      xlab("Republican Advantage Prediction") + ylab("Republican Advantage Results")})
+     ggplot(aes(x = response)) + geom_bar(response = "dodge") + ggtitle("Predicted Republican Advantage is not Always Right ") +
+     xlab("Republican Advantage Prediction") + ylab("Republican Advantage Results")})
+  
+  output$myPlot2 <- renderPlot({
+    
+    joined_data %>%
+      mutate(dem_diff = dem_true - Dem_per) %>%
+      mutate(rep_diff = rep_true - Rep_per) %>%
+      ggplot(aes(x = Dem_per, y = dem_true)) + geom_point(response = "dodge")
+    
+    
+    
+    
+  })
 }
 
 # Run the application 

@@ -89,7 +89,7 @@ results <- schroeder_data %>%
 
 
 ```{r}
-joined <- left_join(results, polls_clean, by = "state_district")
+
 
 polls_clean2 <- polls_clean %>%
   group_by(response, state_district) %>%
@@ -104,24 +104,9 @@ joined <- left_join(results, polls_clean2, by = "state_district") %>%
   mutate(dem_true = (dem_votes / total_true), rep_true = (rep_votes / total_true)) %>%
   filter(!is.na(total))
   
+write_rds(joined, "ps_7/joined_data.rds", compress = "none")
 
 ```
 
-```{r}
-test <- polls %>%
-  select(source, response, genballot, hdem_fav, hrep_fav, ager, educ, gender, race_eth) %>%
-  mutate(neat = str_split(source, "-")) %>%
-  separate(neat, into = c("c", "year", "live", "poll", "results", "master", "data", "elections", "poll_again", "state_district", "wave")) %>%
-  select(state_district, response, wave, ager, educ, gender, race_eth, genballot, hdem_fav, hrep_fav) %>%
-  separate(state_district, into = c("state", "district"), sep = 2) %>%
-  filter(wave == "3") %>%
-  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
-  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
-  filter(educ != "[DO NOT READ] Refused") %>%
-  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
-  filter(ager != "[DO NOT READ] Refused") %>%
-  filter(gender != "[DO NOT READ] Don't know/Refused") %>%
-  filter(district != "sen") %>%
-  filter(district != "gov")
 ```
 
