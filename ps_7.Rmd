@@ -53,10 +53,10 @@ schroeder_data <- read_csv("mt_2_results.csv")
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 polls_separate <-polls %>%
-  select(source, response, ager, educ, gender, race_eth, race_edu) %>%
+  select(source, response, ager, educ, gender, race_eth, race_edu, final_weight) %>%
   mutate(neat = str_split(source, "-")) %>%
   separate(neat, into = c("c", "year", "live", "poll", "results", "master", "data", "elections", "poll_again", "state_district", "wave")) %>%
-  select(state_district, response, wave, ager, educ, gender, race_eth, race_edu)
+  select(state_district, response, wave, ager, educ, gender, race_eth, race_edu, final_weight)
 
 polls_clean <- polls_separate %>%
   separate(state_district, into = c("state", "district"), sep = 2) %>%
@@ -69,7 +69,9 @@ polls_clean <- polls_separate %>%
   filter(gender != "[DO NOT READ] Don't know/Refused") %>%
   filter(wave == "3") %>%
   filter(district != "sen") %>%
-  filter(district != "gov")
+  filter(district != "gov") %>% 
+  mutate(state = str_to_upper(state)) %>%
+  unite(state_district, state:district, sep = "-")
 
 
 write_rds(polls_clean, "ps_7/polls_clean.rds", compress = "none")
@@ -81,10 +83,45 @@ write_rds(polls_clean, "ps_7/polls_clean.rds", compress = "none")
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 results <- schroeder_data %>%
   filter(district != "sen") %>%
-  filter(district != "gov")
+  filter(district != "gov") %>%
+  unite(state_district, state:district, sep = "-")
+```
+
+
+```{r}
+joined <- left_join(results, polls_clean, by = "state_district")
+
+polls_clean2 <- polls_clean %>%
+  group_by(response, state_district) %>%
+  tally(wt = final_weight) %>%
+  spread(response, n, fill = 0) %>%
+  mutate(total = Dem + Rep + Und + 3 + 4 + 5 + 6) %>%
+  mutate(Dem_per = (Dem/total), Rep_per = (Rep/total))
+
+joined <- left_join(results, polls_clean2, by = "state_district") %>%
+  select(state_district, win_party, dem_votes, rep_votes, other_votes, total, Dem_per, Rep_per) %>%
+  mutate(total_true = (dem_votes + rep_votes + other_votes)) %>%
+  mutate(dem_true = (dem_votes / total_true), rep_true = (rep_votes / total_true)) %>%
+  filter(!is.na(total))
+  
+
 ```
 
 ```{r}
-
+test <- polls %>%
+  select(source, response, genballot, hdem_fav, hrep_fav, ager, educ, gender, race_eth) %>%
+  mutate(neat = str_split(source, "-")) %>%
+  separate(neat, into = c("c", "year", "live", "poll", "results", "master", "data", "elections", "poll_again", "state_district", "wave")) %>%
+  select(state_district, response, wave, ager, educ, gender, race_eth, genballot, hdem_fav, hrep_fav) %>%
+  separate(state_district, into = c("state", "district"), sep = 2) %>%
+  filter(wave == "3") %>%
+  filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Don't know/Refused") %>%
+  filter(educ != "[DO NOT READ] Refused") %>%
+  filter(ager != "[DO NOT READ] Don't know/Refused") %>%
+  filter(ager != "[DO NOT READ] Refused") %>%
+  filter(gender != "[DO NOT READ] Don't know/Refused") %>%
+  filter(district != "sen") %>%
+  filter(district != "gov")
 ```
 

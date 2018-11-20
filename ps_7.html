@@ -129,7 +129,37 @@ $(document).ready(function () {
 </div>
 
 
+<pre class="r"><code>joined &lt;- left_join(results, polls_clean, by = &quot;state_district&quot;)
 
+polls_clean2 &lt;- polls_clean %&gt;%
+  group_by(response, state_district) %&gt;%
+  tally(wt = final_weight) %&gt;%
+  spread(response, n, fill = 0) %&gt;%
+  mutate(total = Dem + Rep + Und + 3 + 4 + 5 + 6) %&gt;%
+  mutate(Dem_per = (Dem/total), Rep_per = (Rep/total))
+
+joined &lt;- left_join(results, polls_clean2, by = &quot;state_district&quot;) %&gt;%
+  select(state_district, win_party, dem_votes, rep_votes, other_votes, total, Dem_per, Rep_per) %&gt;%
+  mutate(total_true = (dem_votes + rep_votes + other_votes)) %&gt;%
+  mutate(dem_true = (dem_votes / total_true), rep_true = (rep_votes / total_true)) %&gt;%
+  filter(!is.na(total))</code></pre>
+<pre class="r"><code>test &lt;- polls %&gt;%
+  select(source, response, genballot, hdem_fav, hrep_fav, ager, educ, gender, race_eth) %&gt;%
+  mutate(neat = str_split(source, &quot;-&quot;)) %&gt;%
+  separate(neat, into = c(&quot;c&quot;, &quot;year&quot;, &quot;live&quot;, &quot;poll&quot;, &quot;results&quot;, &quot;master&quot;, &quot;data&quot;, &quot;elections&quot;, &quot;poll_again&quot;, &quot;state_district&quot;, &quot;wave&quot;)) %&gt;%
+  select(state_district, response, wave, ager, educ, gender, race_eth, genballot, hdem_fav, hrep_fav) %&gt;%
+  separate(state_district, into = c(&quot;state&quot;, &quot;district&quot;), sep = 2) %&gt;%
+  filter(wave == &quot;3&quot;) %&gt;%
+  filter(race_eth != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
+  filter(educ != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
+  filter(educ != &quot;[DO NOT READ] Refused&quot;) %&gt;%
+  filter(ager != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
+  filter(ager != &quot;[DO NOT READ] Refused&quot;) %&gt;%
+  filter(gender != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
+  filter(district != &quot;sen&quot;) %&gt;%
+  filter(district != &quot;gov&quot;)</code></pre>
+<pre><code>## Warning: Expected 11 pieces. Additional pieces discarded in 48960 rows [1,
+## 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
 
 
 
