@@ -106,11 +106,24 @@ joined <- left_join(results, polls_clean2, by = "state_district") %>%
   filter(!is.na(total)) %>%
   separate(state_district, into = c("state", "district"), sep = 2)
   
-fit <- lm(rep_true ~ Rep_per, data = joined)
+fit <- lm(rep_true ~ Rep_per, data = joined) %>% 
+  
+  joined %>%  cor(rep_true, Rep_per)
 
+summary(fit)
 
 write_rds(joined, "ps_7/joined_data.rds", compress = "none")
 
+
+
+fit <- joined %>% 
+  mutate(rep_true = parse_number(rep_true), Rep_per = parse_number(Rep_per)) %>%
+  lm(rep_true ~ Rep_per, data = joined)
+
+?cor
+
+
+```
 
 ```
 
