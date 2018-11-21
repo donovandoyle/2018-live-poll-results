@@ -84,6 +84,7 @@ write_rds(polls_clean, "ps_7/polls_clean.rds", compress = "none")
 results <- schroeder_data %>%
   filter(district != "sen") %>%
   filter(district != "gov") %>%
+   mutate(win_party = case_when(win_party == "R" ~ "Republican", win_party == "UNDECIDED" ~ "Undecided", win_party == "D" ~ "Democrat")) %>%
   unite(state_district, state:district, sep = "-")
 ```
 
@@ -107,14 +108,9 @@ joined <- left_join(results, polls_clean2, by = "state_district") %>%
   
 fit <- lm(rep_true ~ Rep_per, data = joined)
 
-fit <- joined %>% 
-  mutate(rep_true = parse_number(rep_true), rep_per = parse_number(Rep_per)) %>%
-  lm(rep_true ~ Rep_per)
+
 write_rds(joined, "ps_7/joined_data.rds", compress = "none")
 
-
-joined_data
-```
 
 ```
 

@@ -31,7 +31,7 @@ joined_data <- read_rds("joined_data.rds")
 ui <- fluidPage(
   
   # Application title
-  titlePanel("How Well Republican Advantage Predicts Winning Party"),
+  titlePanel("Republican Prediction Error and Winning Party"),
   
   
   # Sidebar with a slider input for number of bins 
@@ -52,7 +52,7 @@ ui <- fluidPage(
       tabsetPanel(type = "tabs",
                   tabPanel("About", htmlOutput("about")),
                   tabPanel("Linear Regression", plotOutput("myPlot")),
-                  tabPanel("Summary", plotOutput("summary")))
+                  tabPanel("Statistics", plotOutput("statistics")))
       
                  
     )
@@ -69,13 +69,48 @@ server <- function(input, output) {
     
     joined_data %>%
       filter(win_party == input$x) %>%
-      ggplot(aes(x = Rep_per, y = rep_true)) + geom_point(response = "dodge") + geom_smooth(method = "lm") + geom_abline(linetype = "dashed")
+      ggplot(aes(x = Rep_per, y = rep_true)) + geom_point(response = "dodge") + geom_smooth(method = "lm") + geom_abline(linetype = "dashed") + ggtitle("Republican Prediction Error and Winning Party") +
+      xlab("Republican Advantage Prediction") + ylab("Republican Advantage Results")
     
     
   })
     
+  output$about <- renderUI({
+    
+    # Provide users with a summary of the application and instructions
+    # Provide users with information on the data source
+    
+    str1 <- paste("Summary")
+    str2 <- paste("This application sets . 
+                  Accuracy is the difference between the predicted Republican advantage and the actual Republican advantage subtracted from 100. 
+                  The application includes polling data from 65 total races, including 5 Senate races, one governor race, and 59 House races.")
+    str3 <- paste("Instructions") 
+    str4 <- paste("Click through the above tabs to visualize the data in different ways and use the drop-down menu to toggle between demographic sample variables to explore.
+                  Feel free to download your own copy of the data using the button on the left.")
+    str5 <- paste("Source")
+    str6 <- paste("The New York Times Upshot/Sienna Poll and The New York Times Election Results Coverage")
+    
+    HTML(paste(h3(str1), p(str2), h3(str3), p(str4), h3(str5), p(str6)))})
   
-}
+  output$stats <- renderPrint({
+    my_formula <- paste0("accuracy ~ ", input$variable)
+    m0 <- (lm(my_formula, data = app_data))
+    m1 <- summary(m0)
+    fstat <- m1$fstatistic 
+    pval <- pf(fstat[1], fstat[2], fstat[3], lower.tail = F)
+    
+    
+    HTML(paste(tags$ul(
+      tags$li("The correlation coefficient is about ", strong(round(m1$coefficients[2], digits = 2)), 
+              ". This is the slope of the regression line and means that the variables have a ", weak_strong(), " relationship."),
+      tags$li("The multiple r-squared is appoximately ", strong(round(m1$r.squared, digits = 2)), 
+              ". This means that roughly ", round((m1$r.squared)*100, digits = 2), "percent of the variation is explained by this variable." ),
+      tags$li("The p-value is appoximately ", strong(round(pval, digits = 2)), ". This means that the result ", is_sig(), " statistically significant
+              with respect to a significance level of 0.05."))))})
+    
+  
+  }
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
