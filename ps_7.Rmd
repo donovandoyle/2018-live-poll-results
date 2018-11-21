@@ -25,39 +25,54 @@ library(stringr)
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#working with the data in a RMD file before making the shiny app
+#cleaning the data in the RMD file
+
+#download upshot data
 download.file("https://goo.gl/ZRCBda",
               destfile = "Polls.zip",
               quiet = TRUE,
               mode = "wb")
 
+#unzip data
 unzip("Polls.zip")
 
 ```
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#create a list of file names (upshot)
 x <- dir_ls("2018-live-poll-results-master/data")
 
+#read in all the above files into one dataframe (upshot)
 polls <- map_dfr(x, read_csv, .id = "source")
 ```
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#downloading Mr Schroeder's data 
+#thank you Mr Schroeder, you're the best
 download.file(url = "https://d1b10bmlvqabco.cloudfront.net/attach/jkjtds7xjxd3jy/jlr7wvzsace3kp/joc6wbypyxy7/mt_2_results.csv",
               destfile = "mt_2_results.csv")
 
+#reading the csv file in and creating the dataframe
 schroeder_data <- read_csv("mt_2_results.csv")
 ```
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
+#from Midterm 2 
+#upshot
+#seperating the source variable 
+#cleaning and organising data to be able to use it in the shiny 
+#we might want to use the age, education etc.. in our shiny app
 polls_separate <-polls %>%
   select(source, response, ager, educ, gender, race_eth, race_edu, final_weight) %>%
   mutate(neat = str_split(source, "-")) %>%
   separate(neat, into = c("c", "year", "live", "poll", "results", "master", "data", "elections", "poll_again", "state_district", "wave")) %>%
   select(state_district, response, wave, ager, educ, gender, race_eth, race_edu, final_weight)
 
+#cleaning data
 polls_clean <- polls_separate %>%
   separate(state_district, into = c("state", "district"), sep = 2) %>%
   filter(race_eth != "[DO NOT READ] Don't know/Refused") %>%
@@ -73,7 +88,7 @@ polls_clean <- polls_separate %>%
   mutate(state = str_to_upper(state)) %>%
   unite(state_district, state:district, sep = "-")
 
-
+#write the data to an RDS file to use in the app
 write_rds(polls_clean, "ps_7/polls_clean.rds", compress = "none")
 
 
@@ -81,6 +96,7 @@ write_rds(polls_clean, "ps_7/polls_clean.rds", compress = "none")
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#cleaning schroeder's data
 results <- schroeder_data %>%
   filter(district != "sen") %>%
   filter(district != "gov") %>%
@@ -90,8 +106,9 @@ results <- schroeder_data %>%
 
 
 ```{r}
-
-
+#decided to go in a different direction 
+#editing the polls_clean dataframe
+#upshot
 polls_clean2 <- polls_clean %>%
   group_by(response, state_district) %>%
   tally(wt = final_weight) %>%
@@ -99,6 +116,7 @@ polls_clean2 <- polls_clean %>%
   mutate(total = Dem + Rep + Und + 3 + 4 + 5 + 6) %>%
   mutate(Dem_per = (Dem/total), Rep_per = (Rep/total))
 
+#joining mr schroeder's data and upshot data 
 joined <- left_join(results, polls_clean2, by = "state_district") %>%
   select(state_district, win_party, dem_votes, rep_votes, other_votes, total, Dem_per, Rep_per) %>%
   mutate(total_true = (dem_votes + rep_votes + other_votes)) %>%
@@ -106,10 +124,10 @@ joined <- left_join(results, polls_clean2, by = "state_district") %>%
   filter(!is.na(total)) %>%
   separate(state_district, into = c("state", "district"), sep = 2)
   
-fit <- lm(rep_true ~ Rep_per, data = joined) %>% 
-  
- 
 
+
+fit <- lm(rep_true ~ Rep_per, data = joined) 
+  
 write_rds(joined, "ps_7/joined_data.rds", compress = "none")
 
 

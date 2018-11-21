@@ -129,8 +129,9 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>joined &lt;- left_join(results, polls_clean, by = &quot;state_district&quot;)
-
+<pre class="r"><code>#decided to go in a different direction 
+#editing the polls_clean dataframe
+#upshot
 polls_clean2 &lt;- polls_clean %&gt;%
   group_by(response, state_district) %&gt;%
   tally(wt = final_weight) %&gt;%
@@ -138,28 +139,47 @@ polls_clean2 &lt;- polls_clean %&gt;%
   mutate(total = Dem + Rep + Und + 3 + 4 + 5 + 6) %&gt;%
   mutate(Dem_per = (Dem/total), Rep_per = (Rep/total))
 
+#joining mr schroeder's data and upshot data 
 joined &lt;- left_join(results, polls_clean2, by = &quot;state_district&quot;) %&gt;%
   select(state_district, win_party, dem_votes, rep_votes, other_votes, total, Dem_per, Rep_per) %&gt;%
   mutate(total_true = (dem_votes + rep_votes + other_votes)) %&gt;%
   mutate(dem_true = (dem_votes / total_true), rep_true = (rep_votes / total_true)) %&gt;%
-  filter(!is.na(total))</code></pre>
-<pre class="r"><code>test &lt;- polls %&gt;%
-  select(source, response, genballot, hdem_fav, hrep_fav, ager, educ, gender, race_eth) %&gt;%
-  mutate(neat = str_split(source, &quot;-&quot;)) %&gt;%
-  separate(neat, into = c(&quot;c&quot;, &quot;year&quot;, &quot;live&quot;, &quot;poll&quot;, &quot;results&quot;, &quot;master&quot;, &quot;data&quot;, &quot;elections&quot;, &quot;poll_again&quot;, &quot;state_district&quot;, &quot;wave&quot;)) %&gt;%
-  select(state_district, response, wave, ager, educ, gender, race_eth, genballot, hdem_fav, hrep_fav) %&gt;%
-  separate(state_district, into = c(&quot;state&quot;, &quot;district&quot;), sep = 2) %&gt;%
-  filter(wave == &quot;3&quot;) %&gt;%
-  filter(race_eth != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
-  filter(educ != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
-  filter(educ != &quot;[DO NOT READ] Refused&quot;) %&gt;%
-  filter(ager != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
-  filter(ager != &quot;[DO NOT READ] Refused&quot;) %&gt;%
-  filter(gender != &quot;[DO NOT READ] Don't know/Refused&quot;) %&gt;%
-  filter(district != &quot;sen&quot;) %&gt;%
-  filter(district != &quot;gov&quot;)</code></pre>
-<pre><code>## Warning: Expected 11 pieces. Additional pieces discarded in 48960 rows [1,
-## 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
+  filter(!is.na(total)) %&gt;%
+  separate(state_district, into = c(&quot;state&quot;, &quot;district&quot;), sep = 2)
+  
+
+
+fit &lt;- lm(rep_true ~ Rep_per, data = joined) 
+  
+write_rds(joined, &quot;ps_7/joined_data.rds&quot;, compress = &quot;none&quot;)
+
+
+
+fit_joined &lt;- joined %&gt;% 
+  mutate(log_rep_true =log(rep_true), log_rep_per = log(Rep_per))
+
+fit &lt;- lm(log_rep_true ~ log_rep_per, data = fit_joined)
+
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_rep_true ~ log_rep_per, data = fit_joined)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.08331 -0.02465 -0.00507  0.02095  0.12981 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.25557    0.06905  -3.701 0.000562 ***
+## log_rep_per  0.54627    0.08097   6.746 1.98e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.0429 on 47 degrees of freedom
+## Multiple R-squared:  0.492,  Adjusted R-squared:  0.4811 
+## F-statistic: 45.51 on 1 and 47 DF,  p-value: 1.984e-08</code></pre>
+<p>```</p>
 
 
 
