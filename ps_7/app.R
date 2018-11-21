@@ -97,20 +97,20 @@ server <- function(input, output) {
     
     
     str1 <- paste("Republican")
-    str2 <- paste("The multiple r-squared is appoximately 0.0148, a very weak correlation. This means that around 1.48 percent of the variation is explained by this variable.
+    str2 <- paste("The multiple r-squared is appoximately 0.0148, a very weak correlation. This means that around 1.48 % of the variation is explained by this variable.
 The p-value is appoximately 0.64 . This means that the result is not statistically significant since it is greater than the significance level of 0.05.")
     str3 <- paste("Democrat") 
-    str4 <- paste("The multiple r-squared is appoximately 0.5749, a moderately strong correlation. This means that around 57.49 percent of the variation is explained by this variable.
+    str4 <- paste("The multiple r-squared is appoximately 0.5749, a moderately strong correlation. This means that around 57.49 % of the variation is explained by this variable.
                   The p-value is appoximately 6.61e-6. This means that the result is statistically significant since it is greater than the significance level of 0.05.")
     str5 <- paste("Undecided")
-    str6 <- paste("The multiple r-squared is appoximately 0.9245, a very strong correlation. This means that around 57.49 percent of the variation is explained by this variable.
+    str6 <- paste("The multiple r-squared is appoximately 0.9245, a very strong correlation. This means that around 57.49 % of the variation is explained by this variable.
                   The p-value is appoximately 0.0022. This means that the result is statistically significant since it is greater than the significance level of 0.05.")
     str7 <- paste("More Details")
     str8 <- paste("The dashed line found in the visual represents the if the predicted republican percentage were a perfect guess on the true, so
-                  you can visualize the difference. It is interesting to note that upshot was most wrong with their predictions when it came to republican-won districts, 
+                  you can visualize the difference. It is interesting to note that Upshot was most wrong with their predictions when it came to republican-won districts, 
                   as that relationship was not statistically significant. However, for Democrats and Undecided as winning party, the prediction was very accurate and
                   often predicted that the Republican would lose in that district, which turned out to be true. This visual could have been made with Democrat predicted and 
-                  true percentage, but would have yielded similar results, just visualized differently. ")
+                  true percentage, but would have yielded similar results, just visualized somewhat differently.")
     
     HTML(paste(h3(str1), p(str2), h3(str3), p(str4), h3(str5), p(str6), h4(str7), p(str8)))})
   
