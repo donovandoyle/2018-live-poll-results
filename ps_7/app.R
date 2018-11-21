@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(shinythemes)
 library(tidyverse)
 library(dplyr)
 library(plyr)
@@ -28,53 +29,53 @@ library(plotly)
 joined_data <- read_rds("joined_data.rds")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-  
-  # Application title
-  titlePanel("Republican Prediction Error and Winning Party"),
-  
-  
-  # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-      
-      selectInput(inputId = "x",
-                  label = "Winning Party:",
-                  choices = unique(joined_data$win_party),
-                  selected = "Republican")),
-    
-    
-    
-    # Show a plot of the generated distribution
-    mainPanel(
-     
-      
-      tabsetPanel(type = "tabs",
-                  tabPanel("About", htmlOutput("about")),
-                  tabPanel("Linear Regression", plotOutput("myPlot")),
-                  tabPanel("Statistics", plotOutput("statistics")))
-      
-                 
-    )
-  )
+ui <- fluidPage(fluidPage(theme = shinytheme("cerulean")),
+                
+                # Application title
+                titlePanel("Republican Prediction Error and Winning Party"),
+                
+                
+                # Sidebar with a slider input for number of bins 
+                sidebarLayout(
+                  sidebarPanel(
+                    
+                    selectInput(inputId = "x",
+                                label = "Winning Party:",
+                                choices = unique(joined_data$win_party),
+                                selected = "Republican")),
+                  
+                  
+                  
+                  # Show a plot of the generated distribution
+                  mainPanel(
+                    
+                    
+                    tabsetPanel(type = "tabs",
+                                tabPanel("About", htmlOutput("about")),
+                                tabPanel("Linear Regression", plotlyOutput("myPlot")),
+                                tabPanel("Statistics", htmlOutput("stats")))
+                    
+                    
+                  )
+                )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-
-    
-    
-  output$myPlot <- renderPlot({
+  
+  
+  #Creating a scatter plot
+  output$myPlot <- renderPlotly({
     
     joined_data %>%
       filter(win_party == input$x) %>%
       ggplot(aes(x = Rep_per, y = rep_true)) + geom_point(response = "dodge") + geom_smooth(method = "lm") + geom_abline(linetype = "dashed") + ggtitle("Republican Prediction Error and Winning Party") +
-      xlab("Republican Advantage Prediction") + ylab("Republican Advantage Results")
+      xlab("Proportion of Republicans in Polling") + ylab("True Proportion that Voted Republican")
     
     
   })
-    
+  
   output$about <- renderUI({
     
     # Provide users with a summary of the application and instructions
@@ -90,24 +91,22 @@ server <- function(input, output) {
     
     HTML(paste(h3(str1), p(str2), h3(str3), p(str4), h3(str5), p(str6)))})
   
-  output$stats <- renderPrint({
-    my_formula <- paste0("accuracy ~ ", input$variable)
-    m0 <- (lm(my_formula, data = app_data))
-    m1 <- summary(m0)
-    fstat <- m1$fstatistic 
-    pval <- pf(fstat[1], fstat[2], fstat[3], lower.tail = F)
+  output$stats <- renderUI({
+    
+    #Provide statistical data for the visual seen in the other tab. 
     
     
-    HTML(paste(tags$ul(
-      tags$li("The correlation coefficient is about ", strong(round(m1$coefficients[2], digits = 2)), 
-              ". This is the slope of the regression line and means that the variables have a ", weak_strong(), " relationship."),
-      tags$li("The multiple r-squared is appoximately ", strong(round(m1$r.squared, digits = 2)), 
-              ". This means that roughly ", round((m1$r.squared)*100, digits = 2), "percent of the variation is explained by this variable." ),
-      tags$li("The p-value is appoximately ", strong(round(pval, digits = 2)), ". This means that the result ", is_sig(), " statistically significant
-              with respect to a significance level of 0.05."))))})
+    str1 <- paste("Republican")
+    str2 <- paste("Insert Republican stats here")
+    str3 <- paste("Democrat") 
+    str4 <- paste("Insert Democrat stats here")
+    str5 <- paste("Undecided")
+    str6 <- paste("Insert Undecided stats here")
     
+    HTML(paste(h3(str1), p(str2), h3(str3), p(str4), h3(str5), p(str6)))})
   
-  }
+  
+}
 
 
 # Run the application 

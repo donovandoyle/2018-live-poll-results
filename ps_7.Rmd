@@ -126,19 +126,35 @@ joined <- left_join(results, polls_clean2, by = "state_district") %>%
   
 
 
-fit <- lm(rep_true ~ Rep_per, data = joined) 
-  
+#Writing an rds to use in the shiny app.   
 write_rds(joined, "ps_7/joined_data.rds", compress = "none")
 
 
-
-fit_joined <- joined %>% 
+#Calculating the regression statistics for Democrats when they were the winning party. 
+fit_democrat <- joined %>% 
+  filter(win_party == "Democrat") %>%
   mutate(log_rep_true =log(rep_true), log_rep_per = log(Rep_per))
 
-fit <- lm(log_rep_true ~ log_rep_per, data = fit_joined)
+fit_dem <- lm(log_rep_true ~ log_rep_per, data = fit_democrat)
 
-summary(fit)
+summary(fit_dem)
 
+#Calculating the regression statistics for Republicans when they were winning party. 
+fit_republican <-  joined %>% 
+  filter(win_party == "Republican") %>%
+  mutate(log_rep_true =log(rep_true), log_rep_per = log(Rep_per))
+
+fit_rep <- lm(log_rep_true ~ log_rep_per, data = fit_republican)
+
+summary(fit_rep)
+#Calculating the regression statistics for Undecided when they were winning party.
+fit_undecided <- joined %>%
+  filter(win_party == "Undecided") %>%
+  mutate(log_rep_true =log(rep_true), log_rep_per = log(Rep_per)) 
+
+fit_und <- lm(log_rep_true ~ log_rep_per, data = fit_undecided)
+
+summary(fit_und)
 
 
 ```
