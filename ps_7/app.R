@@ -81,13 +81,11 @@ server <- function(input, output) {
     # Provide users with information on the data source
     
     str1 <- paste("Summary")
-    str2 <- paste("This application sets . 
-                  Accuracy is the difference between the predicted Republican advantage and the actual Republican advantage subtracted from 100. 
-                  The application includes polling data from 65 total races, including 5 Senate races, one governor race, and 59 House races.")
+    str2 <- paste("This application uses polling data and election results data to observe prediction error.")
     str3 <- paste("Instructions") 
-    str4 <- paste("Click through the above tabs to visualize the data in different ways and use the drop-down menu to toggle between demographic sample variables to explore.
-                  Feel free to download your own copy of the data using the button on the left.")
-    str5 <- paste("Source")
+    str4 <- paste("Click through the above tabs to see the plot and the statistical analysis. On this plot, you can see the polled Republican percentage compared
+                  to the true percentage of Republican votes after the election. Toggle between the winning party to see how prediction error came into effect in close races.")
+    str5 <- paste("Data Source")
     str6 <- paste("The New York Times Upshot/Sienna Poll and The New York Times Election Results Coverage")
     
     HTML(paste(h3(str1), p(str2), h3(str3), p(str4), h3(str5), p(str6)))})
